@@ -23,9 +23,7 @@ define LDD_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra
 	$(INSTALL) -m 0755 $(@D)/misc-modules/*.ko $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra
 	$(INSTALL) -m 0755 $(@D)/scull/*.ko $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra
-	mkdir -p $(TARGET_DIR)/etc/init.d
-	$(INSTALL) -m 0755 $(@D)/init/S99ldd $(TARGET_DIR)/etc/init.d/
 endef
 
-$(eval $(kernel-module))
+$(eval $(kernel-module))	
 $(eval $(generic-package))
