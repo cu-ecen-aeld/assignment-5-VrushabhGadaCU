@@ -1,70 +1,30 @@
 #!/bin/sh
-
-# S98lddmodules - Load/unload kernel modules for LDD3 examples
+### BEGIN INIT INFO
+# Provides:          lddmodules
+# Required-Start:    $all
+# Required-Stop:      0 6
+# Default-Start:     S
+# Default-Stop:      0 6
+# Short-Description: Load LDD modules at boot
+### END INIT INFO
 
 case "$1" in
   start)
     echo "Loading kernel modules..."
-    
-    # Load scull module
-    if insmod /lib/modules/$(uname -r)/extra/scull.ko; then
-      echo "scull module loaded successfully"
-    else
-      echo "Failed to load scull module"
-      exit 1
-    fi
-    
-    # Load faulty module
-    if insmod /lib/modules/$(uname -r)/extra/faulty.ko; then
-      echo "faulty module loaded successfully"
-    else
-      echo "Failed to load faulty module"
-      rmmod scull
-      exit 1
-    fi
-    
-    # Load hello module
-    if modprobe hello; then
-      echo "hello module loaded successfully"
-    else
-      echo "Failed to load hello module"
-      rmmod faulty
-      rmmod scull
-      exit 1
-    fi
-    
+    modprobe scull || { echo "Failed to load scull"; exit 1; }
+    modprobe faulty || { echo "Failed to load faulty"; rmmod scull; exit 1; }
+    modprobe hello || { echo "Failed to load hello"; rmmod faulty; rmmod scull; exit 1; }
     echo "All modules loaded"
     ;;
-    
   stop)
     echo "Unloading kernel modules..."
-    
-    # Unload in reverse order (LIFO)
-    if rmmod hello; then
-      echo "hello module unloaded successfully"
-    else
-      echo "Failed to unload hello module"
-    fi
-    
-    if rmmod faulty; then
-      echo "faulty module unloaded successfully"
-    else
-      echo "Failed to unload faulty module"
-    fi
-    
-    if rmmod scull; then
-      echo "scull module unloaded successfully"
-    else
-      echo "Failed to unload scull module"
-    fi
-    
+    rmmod hello || echo "Failed to unload hello"
+    rmmod faulty || echo "Failed to unload faulty"
+    rmmod scull || echo "Failed to unload scull"
     echo "Module unload complete"
     ;;
-    
   *)
     echo "Usage: $0 {start|stop}"
     exit 1
     ;;
 esac
-
-exit 0
